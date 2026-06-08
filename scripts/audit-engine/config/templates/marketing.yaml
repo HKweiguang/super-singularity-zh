@@ -1,0 +1,41 @@
+# 市场策划产物类型配置模板
+# 适用场景：市场营销、品牌策划、推广方案
+# 使用方式：复制到 .singularity/config/artifact_types.yaml
+
+types:
+  marketing:
+    label: "市场策划"
+    filename_patterns: ["marketing", "市场", "策划"]
+    required_sections:
+      - "目标.*受众|受众.*分析"
+      - "营销.*策略|推广.*方案"
+      - "预算.*分配|资源.*规划"
+      - "效果.*评估|KPI|指标"
+    id_prefixes: ["MKT"]
+
+  brand:
+    label: "品牌方案"
+    filename_patterns: ["brand", "品牌", "定位"]
+    required_sections:
+      - "品牌.*定位|核心.*价值"
+      - "目标.*人群|受众.*画像"
+      - "视觉.*规范|VI|标识"
+      - "品牌.*故事|传播.*策略"
+    id_prefixes: ["BRD"]
+
+  campaign:
+    label: "活动方案"
+    filename_patterns: ["campaign", "活动", "推广"]
+    required_sections:
+      - "活动.*目标|目标.*设定"
+      - "活动.*流程|执行.*计划"
+      - "资源.*需求|人力.*物料"
+      - "风险.*预案|应急.*方案"
+      - "效果.*复盘|总结.*报告"
+    id_prefixes: ["CMP"]
+
+  generic:
+    label: "通用文档"
+    filename_patterns: []
+    required_sections: []
+    id_prefixes: []

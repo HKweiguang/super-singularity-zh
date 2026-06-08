@@ -1,0 +1,63 @@
+# 软件工程产物类型配置模板
+# 适用场景：软件开发项目（Web/App/后端/全栈）
+# 使用方式：复制到 .singularity/config/artifact_types.yaml
+
+types:
+  prd:
+    label: "产品需求文档"
+    filename_patterns: ["prd", "需求文档", "产品需求"]
+    required_sections:
+      - "背景|背景.*介绍"
+      - "用户故事|需求.*概述"
+      - "功能需求"
+      - "业务规则"
+      - "错误处理"
+      - "验收标准"
+    id_prefixes: ["REQ"]
+
+  interaction:
+    label: "交互设计"
+    filename_patterns: ["interaction", "交互设计", "交互"]
+    required_sections:
+      - "交互.*概述|流程.*概述"
+      - "用户流程|流程图"
+      - "状态.*定义|状态.*转换"
+      - "异常.*路径|错误.*处理"
+    id_prefixes: ["UI-FLOW"]
+
+  ui:
+    label: "UI 设计"
+    filename_patterns: ["ui", "设计稿", "视觉"]
+    required_sections:
+      - "设计.*概述|视觉.*概述"
+      - "设计.*规范|组件.*规范"
+      - "响应式|适配"
+      - "可访问性|无障碍"
+    id_prefixes: ["UI"]
+
+  tech:
+    label: "技术方案"
+    filename_patterns: ["tech", "技术方案", "架构"]
+    required_sections:
+      - "架构|技术.*架构"
+      - "接口.*定义|API"
+      - "数据.*模型|数据库"
+      - "安全|性能"
+      - "部署|回滚"
+    id_prefixes: ["API"]
+
+  test:
+    label: "测试计划"
+    filename_patterns: ["test", "测试计划", "测试"]
+    required_sections:
+      - "测试.*范围|测试.*目标"
+      - "测试.*环境"
+      - "测试.*用例"
+      - "通过.*标准|验收.*标准"
+    id_prefixes: ["TEST"]
+
+  generic:
+    label: "通用文档"
+    filename_patterns: []
+    required_sections: []
+    id_prefixes: []

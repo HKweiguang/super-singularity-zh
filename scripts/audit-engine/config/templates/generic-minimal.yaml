@@ -1,0 +1,11 @@
+# 最小通用产物类型配置模板
+# 适用场景：任何不需要特定章节结构的文档
+# 特点：只检查通用项（版本号、日期、上游文档），不检查特定章节
+# 使用方式：复制到 .singularity/config/artifact_types.yaml
+
+types:
+  generic:
+    label: "通用文档"
+    filename_patterns: []
+    required_sections: []
+    id_prefixes: []
