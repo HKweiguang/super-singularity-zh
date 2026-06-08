@@ -131,6 +131,20 @@ project-root/
     └── audit-rules.yaml         ← 自定义审计规则
 ```
 
+### 开箱即用模板
+
+当项目未自定义 `.artifacts/` 时，Singularity 自动回退到插件内置的 `references/` 模板：
+
+| 模板 | 路径 | 说明 |
+|------|------|------|
+| **通用顶层定义** | `references/top-level/generic-top-level-template.md` | 定义跨产物共享的术语、状态值、编号契约、版本里程碑 |
+| **通用工作流** | `references/workflow/generic-workflow.md` | 定义产物类型、步骤顺序、审计规则、变更传播 |
+| **通用步骤模板** | `references/steps/generic-step.md` | 任何产物类型的通用骨架（头部、章节、边界、审计） |
+| **软件工程步骤示例** | `references/steps/software-engineering-step.md` | `generic-step.md` 在 PRD 产物上的具体化 |
+| **填写示例** | `references/examples/generic-example.md` | 完整填写的「智能工单系统」顶层定义示例 |
+
+> **框架 vs 领域实例**：Singularity 提供**通用协议和最小模板**；`e2e-solution-guard` 提供**软件工程领域的完整实例**（PRD/交互/UI/技术/测试 的全套模板和流程）。两者互补——通用纪律用 Singularity，软件工程产物管理用 e2e-solution-guard。
+
 ---
 
 ## 项目结构
@@ -168,8 +182,18 @@ super-singularity-zh/
 │       ├── extractor.py
 │       ├── graph.py
 │       └── formatter.py
-├── templates/
-│   └── steps/                 ← 步骤模板
+├── references/                ← 开箱即用模板（通用协议 + 最小示例）
+│   ├── top-level/
+│   │   └── generic-top-level-template.md
+│   ├── steps/
+│   │   ├── generic-step.md
+│   │   └── software-engineering-step.md
+│   ├── workflow/
+│   │   └── generic-workflow.md
+│   └── examples/
+│       └── generic-example.md
+├── templates/                 ← 向后兼容（逐步迁移到 references/）
+│   └── steps/
 └── README.md
 ```
 
