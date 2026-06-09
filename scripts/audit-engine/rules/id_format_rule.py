@@ -35,30 +35,43 @@ class IdFormatRule(BaseRule):
             ))
             return result
 
+        import re as re_module
+
         for idx, id_info in enumerate(document.ids, start=1):
             id_str = id_info['id']
-            prefix = id_str.split('-')[0] if '-' in id_str else id_str
+
+            # 用正则或字符串匹配前缀
+            matched_prefix = None
+            for prefix in valid_prefixes:
+                try:
+                    if re_module.match(f'^({prefix})', id_str):
+                        matched_prefix = prefix
+                        break
+                except re_module.error:
+                    if id_str.startswith(prefix):
+                        matched_prefix = prefix
+                        break
 
             # 检查前缀是否在允许列表中
-            if prefix not in valid_prefixes:
+            if not matched_prefix:
                 result.add(self._make_checkpoint(
                     id=f"I{idx}",
                     item=f"编号 '{id_str}' 使用允许的前缀",
                     status=ResultStatus.FAIL,
                     line_number=id_info['line_number'],
-                    note=f"前缀 '{prefix}' 不在允许列表中。允许的前缀: {', '.join(valid_prefixes)}"
+                    note=f"前缀不在允许列表中。允许的前缀: {', '.join(valid_prefixes)}"
                 ))
                 continue
 
             # 检查格式是否匹配
-            pattern = id_patterns.get(prefix)
-            valid = bool(pattern.match(id_str)) if pattern else False
+            pattern = id_patterns.get(matched_prefix)
+            valid = bool(pattern.match(id_str)) if pattern else True  # 无格式定义时跳过格式检查
             result.add(self._make_checkpoint(
                 id=f"I{idx}",
                 item=f"编号 '{id_str}' 格式正确",
                 status=ResultStatus.PASS if valid else ResultStatus.FAIL,
                 line_number=id_info['line_number'],
-                note=None if valid else f"编号 '{id_str}' 格式不符合 {prefix}-XXX 规范"
+                note=None if valid else f"编号 '{id_str}' 格式不符合规范"
             ))
 
         return result

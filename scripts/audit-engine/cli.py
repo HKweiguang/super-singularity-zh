@@ -143,6 +143,26 @@ def main():
                 "content": semantic_checklist
             }
 
+        # 大任务检测：检查项超过阈值时附加强制分步警告
+        item_count = len(checklist.get("checkpoints", []))
+        max_single_step = checklist.get("execution_discipline", {}).get("max_single_step_items", 10)
+        if item_count > max_single_step:
+            checklist["warning"] = (
+                f"检查项数量为 {item_count}，超过单次执行阈值 {max_single_step}。"
+                f"AI 必须先输出书面分步计划，用户确认后按步骤执行。"
+                f"禁止自行减项或抽样。"
+            )
+
+        # 附加防减项系统 prompt
+        checklist["system_prompt"] = (
+            "你是一个严格的审计执行者。以下规则不可违背：\n"
+            "1. 必须回应清单中的每一项，不得跳过、合并或用'等其他'概括。\n"
+            "2. 输出开头必须包含覆盖声明：'应检查 N 项，已回应 N 项，遗漏 0 项'。\n"
+            "3. 如果检查项超过 10 项，必须先输出分步计划，禁止单次减项执行。\n"
+            "4. 每项结论必须引用产物原文片段作为证据。\n"
+            "5. 如果上下文不足，必须停止并请求拆分，不得截断。"
+        )
+
         output = json.dumps(checklist, ensure_ascii=False, indent=2)
 
         if args.output:

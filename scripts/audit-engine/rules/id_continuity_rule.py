@@ -39,16 +39,16 @@ class IdContinuityRule(BaseRule):
             is_def = id_info.get('is_definition', True)
             if is_def:
                 definition_occurrences[id_str].append(line_num)
+
+                if '-' in id_str:
+                    prefix, num_str = id_str.split('-', 1)
+                    try:
+                        num = int(num_str)
+                        prefix_groups[prefix].append(num)
+                    except ValueError:
+                        pass
             else:
                 reference_occurrences[id_str].append(line_num)
-
-            if '-' in id_str:
-                prefix, num_str = id_str.split('-', 1)
-                try:
-                    num = int(num_str)
-                    prefix_groups[prefix].append(num)
-                except ValueError:
-                    pass
 
         # 检查重复（只检查定义位置）
         duplicates = {k: v for k, v in definition_occurrences.items() if len(v) > 1}

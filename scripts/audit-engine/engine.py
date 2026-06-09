@@ -178,7 +178,14 @@ class AuditEngine:
         checklist = {
             "doc_type": doc_type,
             "dimensions": ["结构", "数据", "状态", "错误", "性能", "安全"],
-            "checkpoints": []
+            "checkpoints": [],
+            "expected_checkpoint_ids": [],
+            "execution_discipline": {
+                "must_respond_every_item": True,
+                "must_provide_coverage_statement": True,
+                "max_single_step_items": 10,
+                "overage_action": "如果检查项超过 10 项，必须先输出分步计划，禁止自行减项"
+            }
         }
 
         # 为每个规则创建空检查点模板
@@ -197,5 +204,6 @@ class AuditEngine:
                     "result": "[待 AI 判断：pass / fail / na]",
                     "note": ""
                 })
+                checklist["expected_checkpoint_ids"].append(cp.id)
 
         return checklist

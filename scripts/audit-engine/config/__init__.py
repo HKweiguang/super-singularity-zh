@@ -54,7 +54,7 @@ def _deep_merge(base: dict, override: dict) -> dict:
 def _load_yaml(config_name: str) -> dict:
     """按优先级查找并加载 YAML 配置，合并所有配置源"""
     merged = {}
-    for config_dir in _get_config_dirs():
+    for config_dir in reversed(_get_config_dirs()):
         yaml_path = config_dir / config_name
         if yaml_path.exists():
             try:

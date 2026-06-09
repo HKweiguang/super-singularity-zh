@@ -48,8 +48,9 @@ class ExtractedDocument:
 class MarkdownExtractor:
     """Markdown 文档提取器"""
 
-    # 编号模式：REQ-001, UI-xxx, API-xxx 等
-    ID_PATTERN = re.compile(r'\b([A-Z]{2,8}-\d{1,4})\b')
+    # 编号模式：支持多级编号如 M1-USER-CST-001, PAGE-CST-MP-HOME-001
+    # 格式：[A-Z0-9]+(-[A-Z0-9]+)*-\d{1,4}
+    ID_PATTERN = re.compile(r'\b([A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d{1,4})\b')
 
     def extract(self, content: str) -> ExtractedDocument:
         """提取文档结构"""
