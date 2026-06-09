@@ -26,13 +26,21 @@ class IdContinuityRule(BaseRule):
             ))
             return result
 
-        # 按前缀分组
+        # 按前缀分组（只统计定义位置的编号）
         prefix_groups: Dict[str, List[int]] = defaultdict(list)
-        id_occurrences: Dict[str, List[int]] = defaultdict(list)
+        definition_occurrences: Dict[str, List[int]] = defaultdict(list)
+        reference_occurrences: Dict[str, List[int]] = defaultdict(list)
 
         for id_info in document.ids:
             id_str = id_info['id']
-            id_occurrences[id_str].append(id_info['line_number'])
+            line_num = id_info['line_number']
+
+            # 向后兼容：没有 is_definition 字段时默认视为定义位置
+            is_def = id_info.get('is_definition', True)
+            if is_def:
+                definition_occurrences[id_str].append(line_num)
+            else:
+                reference_occurrences[id_str].append(line_num)
 
             if '-' in id_str:
                 prefix, num_str = id_str.split('-', 1)
@@ -42,8 +50,8 @@ class IdContinuityRule(BaseRule):
                 except ValueError:
                     pass
 
-        # 检查重复
-        duplicates = {k: v for k, v in id_occurrences.items() if len(v) > 1}
+        # 检查重复（只检查定义位置）
+        duplicates = {k: v for k, v in definition_occurrences.items() if len(v) > 1}
         if duplicates:
             for dup_id, lines in duplicates.items():
                 result.add(self._make_checkpoint(
@@ -51,13 +59,23 @@ class IdContinuityRule(BaseRule):
                     item=f"编号 '{dup_id}' 无重复",
                     status=ResultStatus.FAIL,
                     line_number=lines[1],
-                    note=f"编号 '{dup_id}' 在第 {lines} 行重复出现"
+                    note=f"编号 '{dup_id}' 在第 {lines} 行被重复定义"
                 ))
         else:
             result.add(self._make_checkpoint(
                 id="C-DUP",
                 item="文档中编号无重复",
                 status=ResultStatus.PASS
+            ))
+
+        # 记录引用统计（信息级，不报错）
+        if reference_occurrences:
+            total_refs = sum(len(v) for v in reference_occurrences.values())
+            result.add(self._make_checkpoint(
+                id="C-REF",
+                item="文档中编号引用统计",
+                status=ResultStatus.PASS,
+                note=f"发现 {len(reference_occurrences)} 个编号被引用，共 {total_refs} 次引用"
             ))
 
         # 检查连续性

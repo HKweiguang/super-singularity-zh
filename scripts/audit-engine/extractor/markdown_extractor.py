@@ -177,13 +177,54 @@ class MarkdownExtractor:
             i += 1
 
     def _extract_ids(self, doc: ExtractedDocument) -> None:
-        """提取编号引用"""
+        """提取编号引用，区分定义位置和引用位置
+
+        定义位置：编号作为新实体首次声明的位置
+          - 表格行的第一列（通常是"编号"列）
+          - 列表项开头（如 `- REQ-001: xxx`）
+
+        引用位置：编号被提及但未定义新实体的位置
+          - 正文中的交叉引用（"参见 REQ-001"）
+          - 表格其他列中的关联引用（"关联功能"列）
+        """
+        # 构建表格行映射：行号 -> 表格索引
+        table_row_map = {}
+        for t_idx, table in enumerate(doc.tables):
+            for offset, _ in enumerate(table.raw_lines):
+                actual_line = table.line_number + offset
+                table_row_map[actual_line] = t_idx
+
         for i, line in enumerate(doc.lines, start=1):
             for match in self.ID_PATTERN.finditer(line):
+                id_str = match.group(1)
+                is_definition = False
+
+                # 判断是否为定义位置
+                if i in table_row_map:
+                    # 在表格中，检查是否是第一列
+                    table_idx = table_row_map[i]
+                    table = doc.tables[table_idx]
+                    offset = i - table.line_number
+                    if 0 <= offset < len(table.raw_lines):
+                        raw_line = table.raw_lines[offset]
+                        cells = [cell.strip() for cell in raw_line.split('|')[1:-1]]
+                        if cells and id_str in cells[0]:
+                            is_definition = True
+                else:
+                    # 不在表格中，检查是否是列表项开头
+                    stripped = line.strip()
+                    list_match = re.match(r'^([-*]|\d+\.)\s+(.+)', stripped)
+                    if list_match:
+                        # 列表项内容的第一部分（冒号前）包含编号
+                        first_part = list_match.group(2).split(':')[0].strip()
+                        if id_str in first_part:
+                            is_definition = True
+
                 doc.ids.append({
-                    'id': match.group(1),
+                    'id': id_str,
                     'line_number': i,
-                    'context': line.strip()
+                    'context': line.strip(),
+                    'is_definition': is_definition
                 })
 
     def get_section_by_title(self, doc: ExtractedDocument, title_pattern: str) -> Optional[Section]:
