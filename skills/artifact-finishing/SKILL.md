@@ -148,4 +148,4 @@ NO AMBIGUOUS COMPLETION STATE
 
 > 注：本 skill 的「四选一」是强制决策框架。不存在第五种状态，"待定"不是合法状态。
 
-*Skill 版本：v2.1.0*
+*Skill 版本：v3.0.0*

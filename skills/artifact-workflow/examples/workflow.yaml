@@ -1,0 +1,53 @@
+# .artifacts/workflow.yaml — 示例：概念方案 → 详细设计 → 制造数据
+# tools 按 format 配置 input/output 工具，节点只需声明 output.format 即可自动适配
+#
+# 如需为特定产物类型定义专属顶层规范，在 .artifacts/top-level/ 下创建 {type}-top-level.md
+# 例如：concept-top-level.md、design-top-level.md。artifact-workflow 会按 output.type 自动加载。
+
+tools:
+  step:
+    input:
+      type: script
+      config:
+        path: "scripts/step-parser.py"
+    output:
+      type: mcp_call
+      config:
+        endpoint: "mcp://cad/export"
+
+nodes:
+  - id: concept
+    inputs: []
+    output:
+      path: "docs/concept.md"
+      type: concept
+      format: markdown
+    prompt: "基于用户业务需求生成概念方案"
+    metadata:
+      name: "概念方案"
+      version: "1.0"
+
+  - id: design
+    inputs:
+      - "docs/concept.md"
+    output:
+      path: "docs/design.md"
+      type: design
+      format: markdown
+    prompt: "基于概念方案生成详细设计"
+    metadata:
+      name: "详细设计"
+      version: "1.0"
+
+  # format 为 step，output 自动映射到 tools.step.output.type = mcp_call
+  # 若上游输出也是 step，读取时自动用 tools.step.input 预处理
+  - id: manufacturing
+    inputs:
+      - "docs/design.md"
+    output:
+      path: "models/*.step"
+      type: 3d_model
+      format: step
+    metadata:
+      name: "制造数据"
+      version: "1.0"

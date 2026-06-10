@@ -2,7 +2,7 @@
 
 > **通用工程全链路支持框架，实现 AI 从「能做」到「可信赖」的能力跃迁。**
 
-**版本**：v2.2.1  
+**版本**：v3.0.0  
 **许可证**：MIT
 
 ---
@@ -26,19 +26,20 @@
 
 | 特性 | 说明 |
 |------|------|
-| **纪律约束** | 10 大核心 Skill 强制 AI 在任何行动前完成分析、计划、辩证 |
+| **纪律约束** | 15 个核心 Skill 强制 AI 在任何行动前完成分析、计划、辩证 |
 | **产物链引擎** | 自定义工作流，产物依赖可追溯、变更必传播、审计双轨制 |
-| **审计框架** | 机械检查（脚本）+ 语义检查（AI），确保产物质量 |
+| **审计框架** | 系统性质量检查（AI 语义审计），确保产物质量 |
 | **DAG 引擎** | 可视化产物依赖图、检测循环依赖、变更影响分析 |
 | **干净演进** | 新方案替换旧方案，旧逻辑不成为新实现的锚 |
 
 ---
 
-## 十大核心纪律
+## 核心纪律
 
 | Skill | 定位 | 核心铁律 |
 |-------|------|---------|
-| `objective-analysis` | **会话入口** | 先理解再行动。每次对话以 4 问扫描开场 |
+| `using-singularity` | **会话启动** | 自动加载 objective-analysis，建立全链路纪律 |
+| `objective-analysis` | **会话入口** | 先理解再行动。每次对话以 5 问扫描开场 |
 | `plan-before-execution` | **执行前提** | 没有书面计划，不得执行 |
 | `dialectical-thinking` | **决策前** | 没有对立面分析，不得形成结论 |
 | `complete-task-execution` | **执行中** | 不跳步、不偷懒，子任务必须全部完成 |
@@ -47,55 +48,26 @@
 | `clean-evolution` | **方案演进** | 新东西替换旧东西，旧东西不成为新东西的锚 |
 | `artifact-workflow` | **产物管理** | 依赖可追溯、变更必传播、审计双轨制 |
 | `audit-framework` | **质量检查** | 没有系统质量检查就不能接受任何产物 |
-| `using-singularity` | **会话启动** | 自动加载 objective-analysis，建立全链路纪律 |
-
-### 扩展能力
-
-| Skill | 定位 |
-|-------|------|
-| `acceptance-criteria-first` | 生成产物前，先定义验收标准 |
-| `review-before-acceptance` | 产物交付前，强制审查不自认一次过 |
-| `artifact-isolation` | 并行开发多个特性时，防止产物互相污染 |
-| `artifact-finishing` | 审查通过后，四选一明确收尾决策 |
-| `idea-evaluation` | 新想法提出时，先评估兼容性和影响范围 |
+| `acceptance-criteria-first` | **生成产物前** | 没有验收标准不得生成内容 |
+| `review-before-acceptance` | **产物交付前** | 未经审查不得接受 |
+| `artifact-isolation` | **并行开发** | 无明确合并计划不得并行 |
+| `artifact-finishing` | **审查通过后** | 四选一明确收尾决策 |
+| `idea-evaluation` | **新想法评估** | 未经 gap 分析禁止直接输出产物 |
 
 ---
 
 ## 工具链
-
-### 审计引擎（audit-engine）
-
-机械检查脚本，支持产物格式、连续性、编号映射、契约追溯等自动化检查。
-
-```bash
-# 单文件审计
-python3 scripts/audit-engine/cli.py --file <产物路径> --type <产物类型>
-
-# 目录批量审计
-python3 scripts/audit-engine/cli.py --dir <产物目录> --type <产物类型>
-
-# 生成检查清单
-python3 scripts/audit-engine/cli.py --model-checklist --type <产物类型>
-```
-
-**支持产物类型**：`prd` / `interaction` / `ui` / `tech` / `test` / `generic` 及用户自定义类型。
 
 ### DAG 引擎（dag-engine）
 
 产物依赖分析工具，支持可视化、循环检测、变更影响分析和执行计划生成。
 
 ```bash
-# 可视化依赖图
-python3 scripts/dag-engine.py --dir <产物目录> --visualize
-
-# 检测循环依赖
-python3 scripts/dag-engine.py --dir <产物目录> --detect-cycles
-
-# 变更影响分析
-python3 scripts/dag-engine.py --dir <产物目录> --impact <修改文件>
-
-# 执行计划（波次调度 + 关键路径）
-python3 scripts/dag-engine.py --dir <产物目录> --execution-plan
+# 从 YAML 工作流构建 DAG
+python3 skills/artifact-workflow/scripts/dag-engine.py --workflow .artifacts/workflow.yaml --visualize
+python3 skills/artifact-workflow/scripts/dag-engine.py --workflow .artifacts/workflow.yaml --detect-cycles
+python3 skills/artifact-workflow/scripts/dag-engine.py --workflow .artifacts/workflow.yaml --impact <节点ID>
+python3 skills/artifact-workflow/scripts/dag-engine.py --workflow .artifacts/workflow.yaml --execution-plan
 ```
 
 ---
@@ -121,29 +93,13 @@ python3 scripts/dag-engine.py --dir <产物目录> --execution-plan
 project-root/
 ├── AGENTS.md
 └── .artifacts/
-    ├── workflow.md              ← 工作流定义
-    ├── steps/                   ← 步骤模板
-    │   ├── requirement-step.md
-    │   ├── design-step.md
-    │   └── implementation-step.md
-    ├── top-level/               ← 全局契约
-    │   └── project-top-level.md
-    └── audit-rules.yaml         ← 自定义审计规则
+    ├── workflow.yaml              ← 工作流定义（YAML 格式）
+    ├── steps/                   ← 处理模板（每种节点类型一个文件）
+    │   └── {type}-step.md
+    └── top-level/               ← 全局契约
+        ├── project-top-level.md   ← 框架级规则（跨所有产物类型）
+        └── {type}-top-level.md    ← 产物类型专属规范（可选，按 output.type 匹配）
 ```
-
-### 开箱即用模板
-
-当项目未自定义 `.artifacts/` 时，Singularity 自动回退到插件内置的 `references/` 模板：
-
-| 模板 | 路径 | 说明 |
-|------|------|------|
-| **通用顶层定义** | `references/top-level/generic-top-level-template.md` | 定义跨产物共享的术语、状态值、编号契约、版本里程碑 |
-| **通用工作流** | `references/workflow/generic-workflow.md` | 定义产物类型、步骤顺序、审计规则、变更传播 |
-| **通用步骤模板** | `references/steps/generic-step.md` | 任何产物类型的通用骨架（头部、章节、边界、审计） |
-| **软件工程步骤示例** | `references/steps/software-engineering-step.md` | `generic-step.md` 在 PRD 产物上的具体化 |
-| **填写示例** | `references/examples/generic-example.md` | 完整填写的「智能工单系统」顶层定义示例 |
-
-> **框架 vs 领域实例**：Singularity 提供**通用协议和最小模板**；`e2e-solution-guard` 提供**软件工程领域的完整实例**（PRD/交互/UI/技术/测试 的全套模板和流程）。两者互补——通用纪律用 Singularity，软件工程产物管理用 e2e-solution-guard。
 
 ---
 
@@ -164,36 +120,20 @@ super-singularity-zh/
 │   ├── systematic-problem-solving/
 │   ├── clean-evolution/
 │   ├── artifact-workflow/
+│   │   ├── examples/
+│   │   │   └── workflow.yaml
+│   │   ├── references/
+│   │   │   └── project-top-level-template.md
+│   │   └── scripts/           ← DAG 引擎 CLI + 核心库
+│   │       ├── dag-engine.py
+│   │       ├── dag_core/
+│   │       └── formatters/
 │   ├── audit-framework/
 │   ├── acceptance-criteria-first/
 │   ├── review-before-acceptance/
 │   ├── artifact-isolation/
 │   ├── artifact-finishing/
 │   └── idea-evaluation/
-├── scripts/
-│   ├── audit-engine/          ← 审计引擎
-│   │   ├── cli.py
-│   │   ├── engine.py
-│   │   ├── rules/             ← 审计规则
-│   │   ├── extractor/         ← Markdown 提取器
-│   │   ├── checklists/        ← 语义检查清单
-│   │   └── config/            ← 配置与模板
-│   └── dag/                   ← DAG 引擎
-│       ├── extractor.py
-│       ├── graph.py
-│       └── formatter.py
-├── references/                ← 开箱即用模板（通用协议 + 最小示例）
-│   ├── top-level/
-│   │   └── generic-top-level-template.md
-│   ├── steps/
-│   │   ├── generic-step.md
-│   │   └── software-engineering-step.md
-│   ├── workflow/
-│   │   └── generic-workflow.md
-│   └── examples/
-│       └── generic-example.md
-├── templates/                 ← 向后兼容（逐步迁移到 references/）
-│   └── steps/
 └── README.md
 ```
 

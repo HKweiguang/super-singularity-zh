@@ -136,4 +136,4 @@ NO ARTIFACT ACCEPTED WITHOUT REVIEW
 
 > 注：本 skill 的「审查」是独立的质量关卡，不能由生成方兼任。审查可以是另一个 AI 实例、用户本人、或项目定义的审查角色。
 
-*Skill 版本：v2.1.0*
+*Skill 版本：v3.0.0*
