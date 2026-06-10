@@ -24,7 +24,7 @@ NO AMBIGUOUS COMPLETION STATE
 ## 执行规则
 
 1. **前置条件检查**
-   - 产物必须先经过 `review-before-acceptance` 审查且全部通过
+   - 产物必须先经过 `artifact-review` 审查且全部通过
    - 未通过审查的产物不能进入收尾决策
 
 2. **四选一决策**
@@ -138,7 +138,7 @@ NO AMBIGUOUS COMPLETION STATE
 ## 必需子技能
 
 在进入收尾决策之前：
-- **必需子技能：** 使用 `review-before-acceptance` —— 未审查的产物不能做收尾决策
+- **必需子技能：** 使用 `artifact-review` —— 未审查的产物不能做收尾决策
 
 在决策为"发布"状态时：
 - **必需子技能：** 使用 `artifact-workflow` —— 激活变更传播协议，管理下游依赖
@@ -148,4 +148,4 @@ NO AMBIGUOUS COMPLETION STATE
 
 > 注：本 skill 的「四选一」是强制决策框架。不存在第五种状态，"待定"不是合法状态。
 
-*Skill 版本：v3.0.0*
+*Skill 版本：v3.1.0*

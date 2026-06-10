@@ -116,8 +116,8 @@ NO CONTENT WITHOUT ACCEPTANCE CRITERIA
 
 在内容生成完成之后：
 - **必需子技能：** 使用 `evidence-before-claims` —— 逐条验证产物是否满足验收标准
-- **必需子技能：** 使用 `review-before-acceptance` —— 产物审查时以验收标准为审查清单
+- **必需子技能：** 使用 `artifact-review` —— 产物审查时以验收标准为审查清单
 
 > 注：本 skill 的「验收标准」是节点工作流中的下游约束。上游文档中的需求定义是验收标准的输入，但不是替代。
 
-*Skill 版本：v3.0.0*
+*Skill 版本：v3.1.0*

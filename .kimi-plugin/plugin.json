@@ -1,7 +1,7 @@
 {
   "name": "super-singularity-zh",
-  "version": "2.3.0",
-  "description": "通用工程全链路支持框架 v2.3。以纪律约束为基石，以产物链引擎为载体，以系统方法论为骨架，实现 AI 在通用工程领域从「能做」到「可信赖」的能力跃迁。",
+  "version": "3.1.0",
+  "description": "通用工程全链路支持框架 v3.1.0。以纪律约束为基石，以产物链引擎为载体，以系统方法论为骨架，实现 AI 在通用工程领域从「能做」到「可信赖」的能力跃迁。",
   "author": {
     "name": "User"
   },
@@ -19,7 +19,7 @@
     "dialectical-thinking",
     "singularity",
     "acceptance-criteria-first",
-    "review-before-acceptance",
+    "artifact-review",
     "artifact-isolation",
     "artifact-finishing",
     "idea-evaluation"
@@ -32,7 +32,7 @@
   "interface": {
     "displayName": "超级奇点 · 工程能力跃迁",
     "shortDescription": "通用工程全链路支持框架，实现 AI 从「能做」到「可信赖」的能力跃迁",
-    "longDescription": "Singularity 以纪律约束为基石，以产物链引擎为载体，以系统方法论为骨架——先理解再行动，先计划再执行，先辩证再结论，先验证再声称。提供 artifact-workflow 产物链引擎支持自定义工作流，实现产物依赖可追溯、变更必传播、审计双轨制。",
+    "longDescription": "Singularity 以纪律约束为基石，以产物链引擎为载体，以系统方法论为骨架——先理解再行动，先计划再执行，先辩证再结论，先验证再声称。提供 artifact-workflow 产物链引擎支持自定义工作流，实现产物依赖可追溯、变更必传播、审查双轨制。",
     "capabilities": [
       "Interactive",
       "Read",
