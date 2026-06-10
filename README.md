@@ -2,146 +2,235 @@
 
 > **通用工程全链路纪律框架，让 AI 从「能做」到「可信赖」。**
 
-**版本**：v3.1.0  
-**许可证**：MIT
+**版本**：v3.1.0 · **许可证**：MIT
 
 ---
 
-## Singularity 是什么？
+## 先讲个故事
 
-Singularity 是一套**通用工程纪律**，不是工具集。
+你让 AI 写个登录功能。它咔咔一顿输出，然后说："完成了！"
 
-它回答的不是"用什么技术"，而是**"在什么时机、以什么顺序、用什么标准做决策"**。简单说：它给 AI 立规矩——先理解再动手，先验证再声称，一次只审查一个产物。
+你打开一看——没做密码强度校验，没处理并发冲突，登录态也没设计。你问它怎么没做，它说："你没说要啊。"
 
-> **关键区别**：Singularity 的产物不限于代码。PRD、交互设计、UI 原型、技术方案、测试计划、合规报告……任何可交付物都是产物，都适用同一套纪律。
+这就是问题。**AI 不是不会做，是不知道该做到什么程度才算完。**
+
+Singularity 解决的就是这个：**给 AI 立规矩，让它知道什么时候该停、什么时候该问、什么时候该验证。**
+
+不是让 AI 更聪明，是让 AI 更靠谱。
 
 ---
 
-## 核心架构：三层纪律
+## 这套规矩长什么样？
+
+三层，简单到离谱：
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  第一层：思考纪律（做任何事之前）                              │
-│  ─────────────────────────────────                           │
-│  objective-analysis  →  理解真实意图                          │
-│  dialectical-thinking  →  看正反两面                          │
-│  plan-before-execution  →  书面计划再开工                      │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│  第二层：执行纪律（做事过程中）                                │
-│  ─────────────────────────────────                           │
-│  complete-task-execution  →  不跳步、不偷懒                   │
-│  evidence-before-claims  →  验证后才声称完成                   │
-│  artifact-workflow  →  产物依赖可追溯、变更必传播              │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│  第三层：交付纪律（产物完成后）                                │
-│  ─────────────────────────────────                           │
-│  acceptance-criteria-first  →  先定义标准再生成                 │
-│  artifact-review  →  一次只审一个产物                         │
-│  artifact-finishing  →  四选一明确收尾状态                     │
-└─────────────────────────────────────────────────────────────┘
+先想明白 → 再做 → 做完验
 ```
+
+展开说：
+
+**第一层：动手之前先动脑子**
+
+用户说"帮我做个功能"，Singularity 不会让 AI 直接写代码。它会先问：你真正想解决什么问题？有没有别的方案？风险在哪？
+
+**第二层：做的时候不偷懒**
+
+写计划、按步骤执行、改了上游记得同步下游、新方案替换旧方案时不让旧代码拖后腿。
+
+**第三层：做完别直接说完成了**
+
+有验收标准才能开始生成。一次只审查一个产物。审完别悬着——归档、发布、废弃、回滚，四选一。
+
+```mermaid
+graph TD
+    A[用户提出需求] --> B[想明白]
+    B --> C[动手做]
+    C --> D[验完交]
+    D --> E[交付]
+
+    B --> B1[理解真实意图]
+    B --> B2[看正反两面]
+    B --> B3[写书面计划]
+
+    C --> C1[按计划执行]
+    C --> C2[产物可追溯]
+    C --> C3[变更必传播]
+
+    D --> D1[有标准才生成]
+    D --> D2[一次只审一个]
+    D --> D3[四选一收尾]
+```
+
+---
+
+## 产物不只是代码
+
+Singularity 管的是**任何可交付物**，不是只有代码。
+
+一个 Markdown 的需求文档、一份 YAML 的配置、一张 UI 设计稿、一个三维 CAD 模型、一段语音脚本、一份 PDF 合同——都是产物，都适用同一套规矩。
+
+```mermaid
+graph TD
+    subgraph "文档类"
+        M[Markdown] --> M1[PRD 需求文档]
+        Y[YAML/JSON] --> Y1[MCP 配置]
+        P[PDF] --> P1[合规报告]
+    end
+    
+    subgraph "模型类"
+        C[CAD] --> C1[机械零件]
+        B[BIM] --> B1[建筑结构]
+        S[STL] --> S1[3D 打印件]
+    end
+    
+    subgraph "数据类"
+        E[Excel] --> E1[BOM 清单]
+        SQL[SQL] --> SQL1[表结构]
+        J[JSON] --> J1[API 契约]
+    end
+    
+    subgraph "媒体类"
+        V[视频] --> V1[演示 demo]
+        PNG[PNG/SVG] --> PNG1[UI 设计稿]
+    end
+```
+
+---
+
+## 产物之间怎么关联？DAG
+
+产物不是孤立的。PRD 改了一个需求，设计稿、技术方案、测试用例都要跟着变。
+
+Singularity 用 **DAG（有向无环图）** 管理这种依赖。
+
+### 最简单的例子
+
+概念方案 → 详细设计 → 制造数据 + 测试计划
+
+```mermaid
+graph LR
+    A[概念方案] --> B[详细设计]
+    B --> C[制造数据]
+    B --> D[测试计划]
+```
+
+概念方案改了，详细设计必须同步，制造数据和测试计划跟着更新。
+
+### 依赖怎么建立
+
+每个产物是一个节点，在 `workflow.yaml` 里声明：
+
+```yaml
+- id: "设计稿"
+  inputs:
+    - "PRD.md"          # 引用上游输出
+  output:
+    path: "design.md"
+    type: "design"
+```
+
+**关键在这里**：节点 B 的 `inputs` 引用了节点 A 的 `output.path`，DAG 边就自动形成了。
+
+```mermaid
+graph LR
+    A[PRD<br/>output.path: PRD.md] --> B[设计稿<br/>inputs: [PRD.md]]
+```
+
+改了 PRD，DAG 引擎自动扫描下游，标出设计稿、技术方案、测试计划——哪些要同步。
 
 ---
 
 ## 和 Superpowers 的关系
 
-| | **Singularity** | **Superpowers** |
-|--|----------------|-----------------|
-| **定位** | 纪律框架（**什么时候做、按什么顺序**） | 能力框架（**怎么做、用什么工具**） |
-| **适用产物** | **任何产物**：PRD、设计、文档、配置、代码…… | **主要聚焦代码**：TDD、git、代码审查、子智能体开发 |
-| **回答的问题** | "先理解还是先动手？" "验证通过才能声称完成吗？" | "怎么写测试？" "怎么用 git worktree？" "怎么派发子智能体？" |
-| **关系** | **前置约束** —— Singularity 决定能不能开始 | **后置实现** —— Superpowers 决定怎么实现 |
+一句话：**Singularity 管"该不该做"，Superpowers 管"怎么做"。**
 
-**一句话：Singularity 管"该不该做"，Superpowers 管"怎么做"。两者配套使用。**
+| | Singularity | Superpowers |
+|--|-------------|-------------|
+| 管什么 | 纪律约束 | 技术实现 |
+| 回答 | "先理解还是先动手？" | "怎么写测试？" |
+| 产物 | 任何可交付物 | 主要聚焦代码 |
 
----
+**实际怎么配合？**
 
-## 什么时候用 Singularity，什么时候用 Superpowers？
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant S as Singularity
+    participant P as Superpowers
 
-```
-用户说"帮我写个 PRD / 画个设计稿 / 做个技术方案 / 写段代码"
-    ↓
-Singularity: objective-analysis → 先理解用户真正想要什么
-    ↓
-Singularity: dialectical-thinking → 分析风险和对立面
-    ↓
-Singularity: plan-before-execution → 写书面计划
-    ↓
-Superpowers: TDD / subagent-driven-development / design-system → 按领域最佳实践实现
-    ↓
-Singularity: evidence-before-claims → 验证后才声称完成
-    ↓
-Singularity: artifact-review → 审查产物质量
-    ↓
-Superpowers: requesting-code-review → 请求审查（代码或设计）
-    ↓
-Singularity: artifact-finishing → 明确收尾状态
+    U->>S: 帮我做个功能
+    S->>S: 理解意图 + 辩证分析 + 写计划
+    S->>P: 按计划执行
+    P->>P: TDD / 子智能体开发
+    P->>S: 产物完成
+    S->>S: 验证 + 审查 + 收尾
+    S->>U: 交付
 ```
 
----
-
-## 14 个核心 Skill
-
-| 层级 | Skill | 一句话说明 |
-|------|-------|-----------|
-| 会话启动 | `using-singularity` | 每次会话自动加载纪律栈 |
-| 思考 | `objective-analysis` | 先理解真实意图，再行动 |
-| 思考 | `dialectical-thinking` | 没有对立面分析，不得形成结论 |
-| 思考 | `plan-before-execution` | 没有书面计划，不得执行 |
-| 执行 | `complete-task-execution` | 不跳步、不偷懒 |
-| 执行 | `evidence-before-claims` | 没有验证就不能声称完成 |
-| 执行 | `systematic-problem-solving` | 没有根因调查就不能提出解决方案 |
-| 执行 | `clean-evolution` | 新方案替换旧方案，旧逻辑不拖后腿 |
-| 产物 | `artifact-workflow` | 产物依赖可追溯、变更必传播 |
-| 产物 | `acceptance-criteria-first` | 没有验收标准不得生成内容 |
-| 审查 | `artifact-review` | 一次只审查一个产物 |
-| 收尾 | `artifact-finishing` | 四选一：归档 / 发布 / 废弃 / 回滚 |
-| 变更 | `artifact-isolation` | 并行开发不互相污染 |
-| 决策 | `idea-evaluation` | 未经 gap 分析禁止直接输出产物 |
+Singularity 先定规矩，Superpowers 按规矩干活。配套使用，缺一不可。
 
 ---
 
-## v3.1.0 核心变更
+## 审查：一次只审一个
 
-- **统一审查入口**：`audit-framework` + `review-before-acceptance` 合并为 `artifact-review`
-- **一次只审查一个产物**：审查报告只出一份，但过程中可查阅上游产物
-- **职责分离**：`evidence-before-claims` 从审查子步骤变为**前置条件**
-- **DAG 接入**：审查流程引入依赖链扫描
-- **移除 "机械检查"**：所有检查统一由 AI 执行
+审查不是走形式。Singularity 的审查流程长这样：
+
+```mermaid
+flowchart LR
+    A[产物完成] --> B{验证通过?}
+    B -->|否| C[修复]
+    C --> B
+    B -->|是| D[准备]
+    D --> E[检查清单<br/>6维度客观检查]
+    E --> F[独立审查<br/>3维度主观判断]
+    F --> G[出报告]
+    G --> H{通过?}
+    H -->|否| I[修复后重审]
+    I --> E
+    H -->|是| J[进入下游]
+```
+
+**一次只审一个产物**。出一份报告，主角是一个产物。但审查过程中可以查阅上游产物作为参考。
+
+---
+
+## 14 个核心纪律
+
+`using-singularity` —— 每次会话自动加载纪律栈  
+`objective-analysis` —— 先理解真实意图，再行动  
+`dialectical-thinking` —— 没有对立面分析，不得形成结论  
+`plan-before-execution` —— 没有书面计划，不得执行  
+`complete-task-execution` —— 不跳步、不偷懒  
+`evidence-before-claims` —— 没有验证就不能声称完成  
+`systematic-problem-solving` —— 没有根因调查就不能提出解决方案  
+`clean-evolution` —— 新方案替换旧方案  
+`artifact-workflow` —— 产物依赖可追溯、变更必传播  
+`acceptance-criteria-first` —— 没有验收标准不得生成内容  
+`artifact-review` —— 一次只审查一个产物  
+`artifact-finishing` —— 归档 / 发布 / 废弃 / 回滚 四选一  
+`artifact-isolation` —— 并行开发不互相污染  
+`idea-evaluation` —— 未经 gap 分析禁止直接输出产物
+
+---
+
+## v3.1.0 改了什么
+
+- `audit-framework` + `review-before-acceptance` 合并为 `artifact-review`，统一审查入口
+- `evidence-before-claims` 从审查子步骤变为**前置条件**
+- 审查流程引入 DAG 引擎做端到端链检查
+- 移除"机械检查"概念，所有检查统一由 AI 执行
 
 ---
 
 ## 快速开始
 
-### 安装
-
 ```bash
 git clone git@github.com:HKweiguang/super-singularity-zh.git
 ```
 
-在 Kimi Code 中加载插件，会话启动时自动激活 `using-singularity`。
-
-### 自定义工作流
-
-在项目根目录创建 `.artifacts/workflow.yaml` 即可定义自己的产物工作流。产物类型可以是任何格式——Markdown、YAML、JSON、设计稿、三维模型……Singularity 只要求遵守纪律，不限制你用什么工具链。
+在 Kimi Code 中加载插件，会话启动时自动激活。
 
 ---
 
-## 核心原则
-
-```
-先理解  →  再行动
-先计划  →  再执行
-先辩证  →  再结论
-先验证  →  再声称
-```
-
----
-
-## 致谢
-
-Singularity 的设计灵感来源于系统工程、质量控制理论和辩证唯物主义方法论。它不是一个银弹，而是一套**让 AI 在通用工程领域变得更可信赖的纪律契约**。
+Singularity 不是一个银弹，是一套**让 AI 在通用工程领域变得更可信赖的纪律契约**。
